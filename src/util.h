@@ -8,6 +8,7 @@
 #ifndef util_h
 #define util_h
 
+#include <random>
 #include "config.h"
 
 static sample_t maxf(sample_t a, sample_t b) {

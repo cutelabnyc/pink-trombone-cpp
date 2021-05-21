@@ -10,7 +10,6 @@
 
 #include <stdio.h>
 #include "config.h"
-#include "../JuceLibraryCode/JuceHeader.h"
 
 class Glottis {
 public:
