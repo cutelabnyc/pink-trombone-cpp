@@ -139,21 +139,21 @@ void Tract::addTransient(int position)
 	}
 }
 
-void Tract::addTurbulenceNoise(sample_t turbulenceNoise, Glottis *glottis)
+void Tract::addTurbulenceNoise(sample_t turbulenceNoise, sample_t glottalNoiseModulator)
 {
 	if (this->constrictionIndex < 2.0 || this->constrictionIndex > (sample_t) this->tractProps->n) {
 		return;
 	}
 	if (this->constrictionDiameter <= 0.0) return;
 	sample_t intensity = this->fricativeIntensity;
-	this->addTurbulenceNoiseAtIndex(0.66 * turbulenceNoise * intensity, this->constrictionIndex, this->constrictionDiameter, glottis);
+	this->addTurbulenceNoiseAtIndex(0.66 * turbulenceNoise * intensity, this->constrictionIndex, this->constrictionDiameter, glottalNoiseModulator);
 }
 
-void Tract::addTurbulenceNoiseAtIndex(sample_t turbulenceNoise, sample_t index, sample_t diameter, Glottis *glottis)
+void Tract::addTurbulenceNoiseAtIndex(sample_t turbulenceNoise, sample_t index, sample_t diameter, sample_t glottalNoiseModulator)
 {
 	long i = (long) floor(index);
 	sample_t delta = index - (sample_t) i;
-	turbulenceNoise *= glottis->getNoiseModulator();
+	turbulenceNoise *= glottalNoiseModulator;
 	sample_t thinness0 = clamp(8.0 * (0.7 - diameter), 0.0, 1.0);
 	sample_t openness = clamp(30.0 * (diameter - 0.3), 0.0, 1.0);
 	sample_t noise0 = turbulenceNoise * (1.0 - delta) * thinness0 * openness;
@@ -314,13 +314,13 @@ void Tract::reshapeTract(sample_t deltaTime)
 	this->noseA[0] = this->noseDiameter[0] * this->noseDiameter[0];
 }
 
-void Tract::runStep(sample_t glottalOutput, sample_t turbulenceNoise, sample_t lambda, Glottis *glottis)
+void Tract::runStep(sample_t glottalOutput, sample_t turbulenceNoise, sample_t lambda, sample_t glottalNoiseModulator)
 {
 	sample_t updateAmplitudes = ((sample_t) rand() / (sample_t) RAND_MAX) < 0.1;
 	
 	//mouth
 	this->processTransients();
-	this->addTurbulenceNoise(turbulenceNoise, glottis);
+	this->addTurbulenceNoise(turbulenceNoise, glottalNoiseModulator);
 	
 	//this->glottalReflection = -0.8 + 1.6 * Glottis.newTenseness;
 	this->junctionOutputR[0] = this->L[0] * this->glottalReflection + glottalOutput;
